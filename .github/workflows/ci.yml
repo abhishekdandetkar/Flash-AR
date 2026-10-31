@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-fund --no-audit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Production build
+        run: npm run build
+
+      # The build embeds VITE_* env values; fail fast if a stale or foreign
+      # Supabase host ever sneaks back into the client bundle.
+      - name: Verify build output is free of Lovable references
+        run: |
+          if grep -ri "lovable" .output/public/assets --include='*.js' -l; then
+            echo "::error::Found 'lovable' in the client bundle"
+            exit 1
+          fi
+          echo "Client bundle clean."

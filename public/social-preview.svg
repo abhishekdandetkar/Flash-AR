@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Flash AR — Make every sleeve play">
+  <rect width="1200" height="630" fill="#111111"/>
+  <circle cx="940" cy="312" r="220" fill="#f5b942" opacity=".12"/>
+  <circle cx="940" cy="312" r="145" fill="none" stroke="#f5b942" stroke-width="18"/>
+  <circle cx="940" cy="312" r="24" fill="#f5b942"/>
+  <path d="M905 145 820 330h62l-16 150 114-204h-64z" fill="#f5b942"/>
+  <text x="96" y="245" fill="#f5b942" font-family="Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="8">FLASH AR</text>
+  <text x="96" y="345" fill="#ffffff" font-family="Arial, sans-serif" font-size="76" font-weight="700">Make every sleeve</text>
+  <text x="96" y="430" fill="#ffffff" font-family="Arial, sans-serif" font-size="76" font-weight="700">play when scanned.</text>
+  <text x="96" y="505" fill="#c8c8c8" font-family="Arial, sans-serif" font-size="30">Interactive WebAR for album covers and photo albums</text>
+</svg>
