@@ -10,7 +10,7 @@
     {
       "binding": "DB",
       "database_name": "flash-ar",
-      "database_id": ""
+      "database_id": "DATABASE_ID"
     }
   ],
 
