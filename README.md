@@ -15,8 +15,9 @@ Flash AR is a WebAR SaaS platform for interactive album experiences — vinyl sl
 
 - TanStack Start (React 19) + TypeScript, Tailwind CSS 4
 - TanStack Router file-based routes (SSR via Nitro, targeted at Cloudflare Workers)
-- Supabase (Postgres + Auth + Storage) for user campaigns
-- Drizzle ORM migrations for the SQL schema
+- Cloudflare D1 (SQLite) for user campaign data
+- Cloudflare R2 for media + `.mind` asset storage
+- Cookie-based JWT auth (httpOnly session cookie)
 - MindAR / A-Frame loaded from CDN at runtime
 
 ## Development
@@ -29,13 +30,12 @@ npm run dev
 
 ### Environment variables
 
-| Variable                                                     | Description                                                                     |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| `VITE_SUPABASE_URL` / `SUPABASE_URL`                         | Supabase project URL (public URL; server side may use a different internal URL) |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` / `SUPABASE_PUBLISHABLE_KEY` | Supabase publishable (anon-style) key                                           |
-| `SUPABASE_SERVICE_ROLE_KEY`                                  | Server-only service-role key; required by `/api/public/assets/*`                |
-| `VITE_SITE_URL`                                              | Canonical site origin, used for sitemap/robots/OG metadata (optional in dev)    |
-| `DATABASE_URL`                                               | Postgres URL for `drizzle-kit` migrations                                       |
+| Variable              | Description                                                                     |
+| --------------------- | ------------------------------------------------------------------------------- |
+| `VITE_SITE_URL`       | Canonical site origin, used for sitemap/robots/OG metadata (optional in dev)    |
+| `SESSION_SECRET`      | Server-only secret for signing session JWTs (set via `wrangler secret put`)     |
+| `D1_DATABASE_ID`      | D1 database ID (from `wrangler d1 create flash-ar`)                             |
+| `R2_BUCKET_NAME`      | R2 bucket name for asset storage (default: `flash-ar-assets`)                   |
 
 `.env` is git-ignored; never commit secrets.
 
@@ -53,9 +53,9 @@ npm run dev
 
 ## Architecture
 
-- User campaigns live in Supabase (`public.campaigns`; RLS: public read so any phone can scan, owner-only writes). Cover images, layer media, and compiled `.mind` files go to the private `ar-assets` storage bucket and are served cross-device through `/api/public/assets/*`.
+- User campaigns live in Cloudflare D1 (`campaigns` table; D1 queries enforce owner-only writes, public read for scanned campaigns). Cover images, layer media, and compiled `.mind` files go to Cloudflare R2 (`flash-ar-assets` bucket) and are served cross-device through `/api/public/assets/*`.
 - Demo campaigns stay device-local in IndexedDB (`src/lib/demos.ts`) — their artwork is bundled, so they work on any phone without the backend.
-- Managing albums requires sign-in (email/password + Google); studio routes sit under the `_authenticated` layout. `/scan/$id` and `/print/$id` are public.
+- Managing albums requires sign-in (email/password via cookie-based JWT sessions); studio routes sit under the `_authenticated` layout. `/scan/$id` and `/print/$id` are public.
 - Layer coordinates use target-width units centered on the cover (y up) — shared by the 2D editor/simulator and the A-Frame AR scene.
 
 ## Deployment

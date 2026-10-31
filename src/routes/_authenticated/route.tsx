@@ -1,7 +1,8 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
 
-/* Gates everything under /studio behind a signed-in session, while allowing demo studio exploration. */
+/* Gates everything under /studio behind a signed-in session, while allowing
+ * demo studio exploration. Session is verified via /api/auth/session (httpOnly
+ * cookie checked on the server). */
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async ({ location }) => {
@@ -10,8 +11,13 @@ export const Route = createFileRoute("/_authenticated")({
       return;
     }
 
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) {
+    try {
+      const res = await fetch("/api/auth/session");
+      const data = (await res.json()) as { user: { id: string; email: string } | null };
+      if (!data.user) {
+        throw redirect({ to: "/auth" });
+      }
+    } catch {
       throw redirect({ to: "/auth" });
     }
   },

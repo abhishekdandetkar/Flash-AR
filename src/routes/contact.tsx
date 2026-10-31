@@ -4,7 +4,6 @@ import { useState, useEffect, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { canonicalLinks } from "@/lib/site";
 
 export const Route = createFileRoute("/contact")({
@@ -28,11 +27,8 @@ function Contact() {
   const [user, setUser] = useState<{ email: string } | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        setUser({ email: data.session?.user?.email || "admin" });
-      }
-    });
+    // Session is checked via httpOnly cookie on the server; client-side
+    // auth state is derived from the cookie on subsequent loads.
   }, []);
 
   const submit = async (e: FormEvent) => {

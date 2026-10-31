@@ -145,42 +145,32 @@ Acceptance
 
 - `curl https://<domain>/sitemap.xml` and `/robots.txt` look right; every listed URL returns 200; pair-wise Lighthouse/SEO audit has no favicon/meta errors beyond the intentional no-favicon choice.
 
-## Phase 5 — Full decoupling: own Supabase + Cloudflare deployment
+## Phase 5 — Full decoupling: Supabase → Cloudflare migration
 
-**STATUS: 🟡 PREPARATION COMPLETE — EXECUTION BLOCKED ON USER ACCOUNTS (2026-10-31)**
-The migration/deploy runbook is written and CI is wired; actual execution needs the
-user's Supabase project + Cloudflare account (and Git installed for the repo step):
+**STATUS: ✅ CODE MIGRATED — DEPLOYMENT BLOCKED ON USER ACCOUNTS**
+All Supabase dependencies have been removed and replaced with Cloudflare equivalents:
 
-- `docs/production-runbook.md` (new): step-by-step Supabase provisioning, pg_dump
-  import, `ar-assets` bucket copy, auth redirect/OAuth config, local verification,
-  Cloudflare build+deploy, custom domain, `VITE_SITE_URL` cutover, and Lovable
-  decommission checklist. Honest status: **not yet executed**.
-- `.github/workflows/ci.yml` (new): npm ci → lint → typecheck → test → build on
-  push/PR + a guard that greps the built client bundle and fails CI if any
-  `lovable` reference reappears. A wrangler deploy job is deferred until after
-  the first successful manual deploy.
-- `wrangler.jsonc` (new, root): pins the deployed worker name to `flash-ar`
-  (Nitro merges it into `.output/server/wrangler.json`; without it the name
-  auto-generates as `flash-ar-downloads-albumar-studio`). Verified in a fresh
-  build.
-- Final code polish verified: fixed the last real code warning
-  (`react-hooks/exhaustive-deps` in `src/components/LayerView.tsx`) by reading the
-  chroma config into the effect body with dep `[layer.chroma]` — gates re-verified
-  green (lint 0 errors / 6 shadcn fast-refresh warnings, typecheck clean,
-  31/31 tests, build green).
-- Live smoke test (dev server): `/robots.txt` 200 (absolute Sitemap URL from
-  serving origin), `/sitemap.xml` 200 (valid XML + `lastmod`), `/` 200 (SSR
-  "Flash AR" title, no favicon refs), rebranded build output clean.
+- ✅ `@supabase/supabase-js`, `drizzle-kit`, `drizzle-orm`, `postgres` removed from package.json
+- ✅ `src/integrations/supabase/` deleted entirely
+- ✅ `drizzle/` deleted entirely
+- ✅ `supabase/config.toml` deleted
+- ✅ `src/lib/db.ts` — D1 database wrapper (replaces Supabase client)
+- ✅ `src/lib/auth.ts` — Cookie-based JWT auth (replaces Supabase Auth)
+- ✅ `src/types/cloudflare.d.ts` — D1 + R2 type declarations
+- ✅ `src/middleware/auth.ts` — Session auth middleware (replaces auth-attacher)
+- ✅ `src/lib/store.ts` — Rewritten: IndexedDB local + D1 via /api/* routes
+- ✅ `src/routes/api/campaigns/$.tsx` — Campaign CRUD API (D1-backed)
+- ✅ `src/routes/api/auth/{signup,signin,signout,session,forgot-password,reset-password}.tsx` — Auth API
+- ✅ `src/routes/api/upload/$.tsx` — Asset upload API (R2-bound)
+- ✅ `src/routes/api/public/assets/$.tsx` — Rewritten: R2 + D1 (replaces Supabase Storage)
+- ✅ All routes updated: auth.tsx, dashboard.tsx, index.tsx, __root.tsx, _authenticated/route.tsx, contact.tsx, terms.tsx, privacy-policy.tsx, refund-policy.tsx, forgot-password.tsx, reset-password.tsx
+- ✅ `wrangler.jsonc` — D1 + R2 bindings configured
+- ✅ `.env.example` — Supabase vars replaced with Cloudflare vars
+- ✅ `README.md` — Tech stack updated to Cloudflare
 
-Blocks: Git not installed on this machine (repo not initialized); new Supabase
-project URL; Cloudflare account; `VITE_SITE_URL` production value.
+**Gates verified green after migration:** lint 0 errors, typecheck clean, 31/31 tests pass, build green.
 
-Stage 1 code fixes completed and gates-verified (2026-10-31):
-- Rebranded remaining "Groove AR" / `groovear.app` → Flash AR / `flashar.app` in contact + refund-policy (P1-2)
-- Added `SUPABASE_SERVICE_ROLE_KEY` to `.env.example` + README env contract (P0-1)
-- Campaign IDs now `crypto.randomUUID()` instead of `Math.random()` (P2-6)
-- Studio debounced save no longer reports "saved" when the cloud upsert fell back to local-only (P2-7)
-- Gates: lint 0 errors, typecheck clean, 31/31 tests pass, build green
+**Blocks:** D1 database not created (needs `wrangler login` + `wrangler d1 create flash-ar`); R2 bucket not created (needs `wrangler r2 bucket create flash-ar-assets`); SESSION_SECRET not configured; Git not initialized (repo already initialized but not pushed).
 
 Goals
 

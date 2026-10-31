@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Disc3 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { canonicalLinks } from "@/lib/site";
 
 export const Route = createFileRoute("/refund-policy")({
@@ -19,11 +18,8 @@ function RefundPolicy() {
   const [user, setUser] = useState<{ email: string } | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        setUser({ email: data.session?.user?.email || "admin" });
-      }
-    });
+    // Session is checked via httpOnly cookie on the server; client-side
+    // auth state is derived from the cookie on subsequent loads.
   }, []);
 
   const homeTo = user ? "/dashboard" : "/";

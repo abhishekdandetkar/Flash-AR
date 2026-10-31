@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { ArrowLeft, Disc3, Loader2, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -30,17 +29,11 @@ function AuthPage() {
   const [awaitingConfirm, setAwaitingConfirm] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) nav({ to: "/dashboard", replace: true });
-    });
-
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if ((event === "SIGNED_IN" || event === "USER_UPDATED") && session) {
-        nav({ to: "/dashboard", replace: true });
-      }
-    });
-
-    return () => sub.subscription.unsubscribe();
+    fetch("/api/auth/session")
+      .then((res) => res.json())
+      .then((data: { user: { id: string; email: string } | null }) => {
+        if (data.user) nav({ to: "/dashboard", replace: true });
+      });
   }, [nav]);
 
   const submit = async (e: FormEvent) => {
@@ -50,37 +43,22 @@ function AuthPage() {
     const normEmail = email.trim().toLowerCase();
 
     try {
-      if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({
-          email: normEmail,
-          password,
-          options: { emailRedirectTo: window.location.origin },
-        });
-        if (error) {
-          toast.error(error.message);
-          return;
-        }
-        if (data.session) nav({ to: "/dashboard", replace: true });
-        else setAwaitingConfirm(true);
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email: normEmail, password });
-        if (error) {
-          toast.error(error.message);
-          return;
-        }
-        nav({ to: "/dashboard", replace: true });
+      const res = await fetch(mode === "signup" ? "/api/auth/signup" : "/api/auth/signin", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email: normEmail, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || "Authentication failed");
+        return;
       }
+      nav({ to: "/dashboard", replace: true });
+    } catch {
+      toast.error("Authentication failed");
     } finally {
       setBusy(false);
     }
-  };
-
-  const oauth = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: window.location.origin },
-    });
-    if (error) toast.error(error.message);
   };
 
   return (
@@ -233,21 +211,6 @@ function AuthPage() {
                     </Link>
                   </p>
                 )}
-
-                <div className="flex items-center gap-3 text-[10px] uppercase tracking-widest text-ink/30">
-                  <span className="h-px flex-1 bg-ink/10" /> or{" "}
-                  <span className="h-px flex-1 bg-ink/10" />
-                </div>
-
-                <div className="space-y-2">
-                  <Button
-                    variant="outline"
-                    className="w-full border-ink/20 text-ink hover:bg-ink hover:text-paper"
-                    onClick={oauth}
-                  >
-                    Continue with Google
-                  </Button>
-                </div>
               </div>
             )}
           </div>

@@ -24,6 +24,14 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as PrintIdRouteImport } from './routes/print.$id'
 import { Route as ScanIdRouteImport } from './routes/scan.$id'
 import { Route as AuthenticatedStudioIdRouteImport } from './routes/_authenticated/studio.$id'
+import { Route as ApiAuthForgotPasswordRouteImport } from './routes/api/auth/forgot-password'
+import { Route as ApiAuthResetPasswordRouteImport } from './routes/api/auth/reset-password'
+import { Route as ApiAuthSessionRouteImport } from './routes/api/auth/session'
+import { Route as ApiAuthSigninRouteImport } from './routes/api/auth/signin'
+import { Route as ApiAuthSignoutRouteImport } from './routes/api/auth/signout'
+import { Route as ApiAuthSignupRouteImport } from './routes/api/auth/signup'
+import { Route as ApiCampaignsSplatRouteImport } from './routes/api/campaigns/$'
+import { Route as ApiUploadSplatRouteImport } from './routes/api/upload/$'
 import { Route as ApiPublicAssetsSplatRouteImport } from './routes/api/public/assets/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -100,6 +108,46 @@ const AuthenticatedStudioIdRoute = AuthenticatedStudioIdRouteImport.update({
   path: '/studio/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiAuthForgotPasswordRoute = ApiAuthForgotPasswordRouteImport.update({
+  id: '/api/auth/forgot-password',
+  path: '/api/auth/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthResetPasswordRoute = ApiAuthResetPasswordRouteImport.update({
+  id: '/api/auth/reset-password',
+  path: '/api/auth/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSessionRoute = ApiAuthSessionRouteImport.update({
+  id: '/api/auth/session',
+  path: '/api/auth/session',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSigninRoute = ApiAuthSigninRouteImport.update({
+  id: '/api/auth/signin',
+  path: '/api/auth/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSignoutRoute = ApiAuthSignoutRouteImport.update({
+  id: '/api/auth/signout',
+  path: '/api/auth/signout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSignupRoute = ApiAuthSignupRouteImport.update({
+  id: '/api/auth/signup',
+  path: '/api/auth/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCampaignsSplatRoute = ApiCampaignsSplatRouteImport.update({
+  id: '/api/campaigns/$',
+  path: '/api/campaigns/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiUploadSplatRoute = ApiUploadSplatRouteImport.update({
+  id: '/api/upload/$',
+  path: '/api/upload/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAssetsSplatRoute = ApiPublicAssetsSplatRouteImport.update({
   id: '/api/public/assets/$',
   path: '/api/public/assets/$',
@@ -121,6 +169,14 @@ export interface FileRoutesByFullPath {
   '/print/$id': typeof PrintIdRoute
   '/scan/$id': typeof ScanIdRoute
   '/studio/$id': typeof AuthenticatedStudioIdRoute
+  '/api/auth/forgot-password': typeof ApiAuthForgotPasswordRoute
+  '/api/auth/reset-password': typeof ApiAuthResetPasswordRoute
+  '/api/auth/session': typeof ApiAuthSessionRoute
+  '/api/auth/signin': typeof ApiAuthSigninRoute
+  '/api/auth/signout': typeof ApiAuthSignoutRoute
+  '/api/auth/signup': typeof ApiAuthSignupRoute
+  '/api/campaigns/$': typeof ApiCampaignsSplatRoute
+  '/api/upload/$': typeof ApiUploadSplatRoute
   '/api/public/assets/$': typeof ApiPublicAssetsSplatRoute
 }
 export interface FileRoutesByTo {
@@ -138,6 +194,14 @@ export interface FileRoutesByTo {
   '/print/$id': typeof PrintIdRoute
   '/scan/$id': typeof ScanIdRoute
   '/studio/$id': typeof AuthenticatedStudioIdRoute
+  '/api/auth/forgot-password': typeof ApiAuthForgotPasswordRoute
+  '/api/auth/reset-password': typeof ApiAuthResetPasswordRoute
+  '/api/auth/session': typeof ApiAuthSessionRoute
+  '/api/auth/signin': typeof ApiAuthSigninRoute
+  '/api/auth/signout': typeof ApiAuthSignoutRoute
+  '/api/auth/signup': typeof ApiAuthSignupRoute
+  '/api/campaigns/$': typeof ApiCampaignsSplatRoute
+  '/api/upload/$': typeof ApiUploadSplatRoute
   '/api/public/assets/$': typeof ApiPublicAssetsSplatRoute
 }
 export interface FileRoutesById {
@@ -157,6 +221,14 @@ export interface FileRoutesById {
   '/print/$id': typeof PrintIdRoute
   '/scan/$id': typeof ScanIdRoute
   '/_authenticated/studio/$id': typeof AuthenticatedStudioIdRoute
+  '/api/auth/forgot-password': typeof ApiAuthForgotPasswordRoute
+  '/api/auth/reset-password': typeof ApiAuthResetPasswordRoute
+  '/api/auth/session': typeof ApiAuthSessionRoute
+  '/api/auth/signin': typeof ApiAuthSigninRoute
+  '/api/auth/signout': typeof ApiAuthSignoutRoute
+  '/api/auth/signup': typeof ApiAuthSignupRoute
+  '/api/campaigns/$': typeof ApiCampaignsSplatRoute
+  '/api/upload/$': typeof ApiUploadSplatRoute
   '/api/public/assets/$': typeof ApiPublicAssetsSplatRoute
 }
 export interface FileRouteTypes {
@@ -176,6 +248,14 @@ export interface FileRouteTypes {
     | '/print/$id'
     | '/scan/$id'
     | '/studio/$id'
+    | '/api/auth/forgot-password'
+    | '/api/auth/reset-password'
+    | '/api/auth/session'
+    | '/api/auth/signin'
+    | '/api/auth/signout'
+    | '/api/auth/signup'
+    | '/api/campaigns/$'
+    | '/api/upload/$'
     | '/api/public/assets/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -193,6 +273,14 @@ export interface FileRouteTypes {
     | '/print/$id'
     | '/scan/$id'
     | '/studio/$id'
+    | '/api/auth/forgot-password'
+    | '/api/auth/reset-password'
+    | '/api/auth/session'
+    | '/api/auth/signin'
+    | '/api/auth/signout'
+    | '/api/auth/signup'
+    | '/api/campaigns/$'
+    | '/api/upload/$'
     | '/api/public/assets/$'
   id:
     | '__root__'
@@ -211,6 +299,14 @@ export interface FileRouteTypes {
     | '/print/$id'
     | '/scan/$id'
     | '/_authenticated/studio/$id'
+    | '/api/auth/forgot-password'
+    | '/api/auth/reset-password'
+    | '/api/auth/session'
+    | '/api/auth/signin'
+    | '/api/auth/signout'
+    | '/api/auth/signup'
+    | '/api/campaigns/$'
+    | '/api/upload/$'
     | '/api/public/assets/$'
   fileRoutesById: FileRoutesById
 }
@@ -229,6 +325,14 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   PrintIdRoute: typeof PrintIdRoute
   ScanIdRoute: typeof ScanIdRoute
+  ApiAuthForgotPasswordRoute: typeof ApiAuthForgotPasswordRoute
+  ApiAuthResetPasswordRoute: typeof ApiAuthResetPasswordRoute
+  ApiAuthSessionRoute: typeof ApiAuthSessionRoute
+  ApiAuthSigninRoute: typeof ApiAuthSigninRoute
+  ApiAuthSignoutRoute: typeof ApiAuthSignoutRoute
+  ApiAuthSignupRoute: typeof ApiAuthSignupRoute
+  ApiCampaignsSplatRoute: typeof ApiCampaignsSplatRoute
+  ApiUploadSplatRoute: typeof ApiUploadSplatRoute
   ApiPublicAssetsSplatRoute: typeof ApiPublicAssetsSplatRoute
 }
 
@@ -339,6 +443,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStudioIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/auth/forgot-password': {
+      id: '/api/auth/forgot-password'
+      path: '/api/auth/forgot-password'
+      fullPath: '/api/auth/forgot-password'
+      preLoaderRoute: typeof ApiAuthForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/reset-password': {
+      id: '/api/auth/reset-password'
+      path: '/api/auth/reset-password'
+      fullPath: '/api/auth/reset-password'
+      preLoaderRoute: typeof ApiAuthResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/session': {
+      id: '/api/auth/session'
+      path: '/api/auth/session'
+      fullPath: '/api/auth/session'
+      preLoaderRoute: typeof ApiAuthSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/signin': {
+      id: '/api/auth/signin'
+      path: '/api/auth/signin'
+      fullPath: '/api/auth/signin'
+      preLoaderRoute: typeof ApiAuthSigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/signout': {
+      id: '/api/auth/signout'
+      path: '/api/auth/signout'
+      fullPath: '/api/auth/signout'
+      preLoaderRoute: typeof ApiAuthSignoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/signup': {
+      id: '/api/auth/signup'
+      path: '/api/auth/signup'
+      fullPath: '/api/auth/signup'
+      preLoaderRoute: typeof ApiAuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/campaigns/$': {
+      id: '/api/campaigns/$'
+      path: '/api/campaigns/$'
+      fullPath: '/api/campaigns/$'
+      preLoaderRoute: typeof ApiCampaignsSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/upload/$': {
+      id: '/api/upload/$'
+      path: '/api/upload/$'
+      fullPath: '/api/upload/$'
+      preLoaderRoute: typeof ApiUploadSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/assets/$': {
       id: '/api/public/assets/$'
       path: '/api/public/assets/$'
@@ -375,6 +535,14 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   PrintIdRoute: PrintIdRoute,
   ScanIdRoute: ScanIdRoute,
+  ApiAuthForgotPasswordRoute: ApiAuthForgotPasswordRoute,
+  ApiAuthResetPasswordRoute: ApiAuthResetPasswordRoute,
+  ApiAuthSessionRoute: ApiAuthSessionRoute,
+  ApiAuthSigninRoute: ApiAuthSigninRoute,
+  ApiAuthSignoutRoute: ApiAuthSignoutRoute,
+  ApiAuthSignupRoute: ApiAuthSignupRoute,
+  ApiCampaignsSplatRoute: ApiCampaignsSplatRoute,
+  ApiUploadSplatRoute: ApiUploadSplatRoute,
   ApiPublicAssetsSplatRoute: ApiPublicAssetsSplatRoute,
 }
 export const routeTree = rootRouteImport

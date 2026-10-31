@@ -26,7 +26,6 @@ import {
   uid,
   type Campaign,
 } from "@/lib/store";
-import { supabase } from "@/integrations/supabase/client";
 import { loadImage } from "@/lib/mindar";
 import { canonicalLinks } from "@/lib/site";
 
@@ -61,25 +60,19 @@ function Index() {
   const refresh = () => listCampaigns().then(setItems);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        nav({ to: "/dashboard", replace: true });
-        return;
-      }
-      setUser(null);
-    });
-    seedDemos().then(refresh);
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        nav({ to: "/dashboard", replace: true });
-        return;
-      }
-      if (event === "SIGNED_OUT") {
+    fetch("/api/auth/session")
+      .then((res) => res.json())
+      .then((data: { user: { id: string; email: string } | null }) => {
+        if (data.user) {
+          nav({ to: "/dashboard", replace: true });
+          return;
+        }
         setUser(null);
-        refresh();
-      }
-    });
-    return () => sub.subscription.unsubscribe();
+      })
+      .catch(() => {
+        setUser(null);
+      });
+    seedDemos().then(refresh);
   }, [nav]);
 
   const create = async (f: File) => {
@@ -104,7 +97,7 @@ function Index() {
   const pickFile = () => (user ? fileRef.current?.click() : nav({ to: "/auth" }));
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await fetch("/api/auth/signout", { method: "POST" });
     setUser(null);
     refresh();
   };

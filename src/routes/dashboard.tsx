@@ -42,7 +42,6 @@ import {
   uid,
   type Campaign,
 } from "@/lib/store";
-import { supabase } from "@/integrations/supabase/client";
 import { loadImage } from "@/lib/mindar";
 import defaultCover from "@/assets/demo-synthwave.jpg";
 
@@ -86,26 +85,21 @@ function Dashboard() {
   useEffect(() => {
     seedDemos().then(refresh);
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) {
-        nav({ to: "/auth", replace: true });
-        return;
-      }
-      setUser({ email: data.session.user.email ?? "Account" });
-      refresh();
-      setLoading(false);
-    });
-
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT") {
-        nav({ to: "/auth", replace: true });
-      } else if (session) {
-        setUser({ email: session.user.email ?? "admin" });
+    fetch("/api/auth/session")
+      .then((res) => res.json())
+      .then((data: { user: { id: string; email: string } | null }) => {
+        if (!data.user) {
+          nav({ to: "/auth", replace: true });
+          return;
+        }
+        setUser({ email: data.user.email ?? "Account" });
         refresh();
-      }
-    });
-
-    return () => sub.subscription.unsubscribe();
+        setLoading(false);
+      })
+      .catch(() => {
+        nav({ to: "/auth", replace: true });
+        setLoading(false);
+      });
   }, [nav]);
 
   const openCreateModal = () => {
@@ -171,7 +165,7 @@ function Dashboard() {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await fetch("/api/auth/signout", { method: "POST" });
     nav({ to: "/auth", replace: true });
   };
 
